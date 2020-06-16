@@ -7,80 +7,99 @@ const height = window.innerHeight;
 canvas.width = width;
 canvas.height = height;
 
-// begin hier met jouw code voor deze opdracht
 
-// create namespace
 let A,B,C;
+let ab,bc,ca; 
+let mAB,mBC,mCA,mPoint; 
 let lAB,lBC,lCA;
-let MAB,MBC,MCA;
-let lAMBC;
+let circumCenter; 
+let distance; 
 
-A = new Point(100,100,20,"red",true,"A");
-B = new Point(600,150,20,"green",true,"B");
-C = new Point(300,300,20,"blue",true,"C");
+A = new Point(0.10*width,0.10*height,20,"red",true);
+B = new Point(0.90*width,0.20*height,20,"green",true);
+C = new Point(0.50*width,0.90*height,20,"blue",true);
 
-MAB = new Point(50,50,10,"black",false,"MMAB");
-MBC = new Point(50,50,10,"black",false,"MMBC");
-MCA = new Point(50,50,10,"black",false,"MMCA");
+ab = new LinearFunction(1,1);
+bc = new LinearFunction(1,1);
+ca = new LinearFunction(1,1);
 
-lAB = new LinearFunction(0.5,1);
-lBC = new LinearFunction(0.5,1);
-lCA = new LinearFunction(0.5,1);
+mAB = new Point(0.10*width,0.10*height,20,"black",false);
+mBC = new Point(0.10*width,0.10*height,20,"black",false);
+mCA = new Point(0.10*width,0.10*height,20,"black",false);
 
-lAMBC = new LinearFunction(2,100);
+lAB = new LinearFunction(1,1);
+lBC = new LinearFunction(1,1);
+lCA = new LinearFunction(1,1);
 
-function animate(){
-  context.clearRect(0,0,width,height)
+circumCenter = new Point(0.10*width,0.10*height,20,"black",false); 
 
-  //path for triangle 
+
+
+
+function animate() {
+  context.clearRect(0,0,width,height); 
+
   context.fillStyle = "rgba(255,255,0,0.4)";
+
+  //triangle template: 
+  context.beginPath();
   context.moveTo(A.x,A.y);
   context.lineTo(B.x,B.y);
   context.lineTo(C.x,C.y);
   context.closePath();
+  context.stroke(); 
+  context.fill();
+
+  //circle template: 
+  context.beginPath();
+  context.arc(circumCenter.x,circumCenter.y,distance,0,2*Math.PI);
   context.stroke();
-  context.fill(); 
+
+  circumCenter.draw(context); 
+  circumCenter.x = lAB.intersection(lBC).x; 
+  circumCenter.y = lAB.intersection(lBC).y; 
+
+ 
 
   A.draw(context);
   B.draw(context);
-  C.draw(context);
+  C.draw(context); 
 
-  MAB.x = (A.x + B.x)/2;
-  MAB.y = (A.y + B.y)/2;
-  MAB.draw(context)
+  mAB.draw(context);
+  mAB.x = (A.x + B.x)/2; 
+  mAB.y = (A.y + B.y)/2; 
 
-  MBC.x = (B.x + C.x)/2;
-  MBC.y = (B.y + C.y)/2;
-  MBC.draw(context)
+  mBC.draw(context);
+  mBC.x = (B.x + C.x)/2; 
+  mBC.y = (B.y + C.y)/2;
 
-  MCA.x = (C.x + A.x)/2;
-  MCA.y = (C.y + A.y)/2;
-  MCA.draw(context)
+  mCA.draw(context);
+  mCA.x = (C.x + A.x)/2; 
+  mCA.y = (C.y + A.y)/2;
 
+  lAB.draw(context);
+  lAB.slope = -1/ab.slope;
+  lAB.intercept = mAB.y - mAB.x*lAB.slope;
 
-  lAB.slope = (A.y - B.y)/(A.x - B.x);
-  lAB.intercept = B.y - B.x * lAB.slope;
+  lBC.draw(context);
+  lBC.slope = -1/bc.slope;
+  lBC.intercept = mBC.y - mBC.x*lBC.slope;
 
-  lBC.slope = (C.y - B.y)/(C.x - B.x);
-  lBC.intercept = C.y - C.x * lBC.slope;
+  lCA.draw(context);
+  lCA.slope = -1/ca.slope;
+  lCA.intercept = mCA.y - mCA.x*lCA.slope;
 
-  lCA.slope = (C.y - A.y)/(C.x - A.x);
-  lCA.intercept = A.y - A.x * lCA.slope;
+  ab.draw(context);
+  ab.slope = (B.y - A.y) / (B.x - A.x);
+  ab.intercept = (B.y - B.x*ab.slope);
 
-  lAMBC.slope = (B.y - MAB.y)/(B.x - MAB.x);
-  lAMBC.intercept = B.y - B.x * lAMBC.slope;
+  bc.draw(context);
+  bc.slope = (B.y - C.y) / (B.x - C.x);
+  bc.intercept = (B.y - B.x*bc.slope);
 
-  lAMBC.slope = (A.y - MBC.y)/(A.x - MBC.x);
-  lAMBC.intercept = A.y - A.x * lAMBC.slope;
-
-
-  lAB.draw(context,"green");
-  lBC.draw(context,"green");
-  lCA.draw(context,"green");
-
-  lAMBC.draw(context,"red")
-
- 
+  ca.draw(context);
+  ca.slope = (C.y - A.y) / (C.x - A.x);
+  ca.intercept = (C.y - C.x*ca.slope);
 }
 
-setInterval(animate,10)
+setInterval(animate,10); 
