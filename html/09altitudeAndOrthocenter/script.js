@@ -8,50 +8,98 @@ canvas.width = width;
 canvas.height = height;
 
 
+let A,B,C;
+let ab,bc,ca; 
+let mAB,mBC,mCA,mPoint; 
+let lAB,lBC,lCA;
+let circumCenter; 
+let distance; 
 
-let A,B,C,ab,bc,ca,altitudebc;
+A = new Point(0.10*width,0.10*height,20,"red",true);
+B = new Point(0.90*width,0.20*height,20,"green",true);
+C = new Point(0.50*width,0.90*height,20,"blue",true);
+
+ab = new LinearFunction(1,1);
+bc = new LinearFunction(1,1);
+ca = new LinearFunction(1,1);
+
+mAB = new Point(0.10*width,0.10*height,20,"black",false);
+mBC = new Point(0.10*width,0.10*height,20,"black",false);
+mCA = new Point(0.10*width,0.10*height,20,"black",false);
+
+lAB = new LinearFunction(1,1);
+lBC = new LinearFunction(1,1);
+lCA = new LinearFunction(1,1);
+
+circumCenter = new Point(0.10*width,0.10*height,20,"black",false); 
 
 
-A = new Point(100,100,20,"red",true);
-B = new Point(600,150,20,"green",true);
-C = new Point(300,300,20,"blue",true);
-
-ab = new LinearFunction(1,1); 
-bc = new LinearFunction(1,1); 
-ca = new LinearFunction(1,1); 
-altitudebc = new LinearFunction(1,1); 
 
 
-function animate(){
-  context.clearRect(0,0,width,height)
-  //path for triangle 
+function animate() {
+  context.clearRect(0,0,width,height); 
+
   context.fillStyle = "rgba(255,255,0,0.4)";
+
+  //triangle template: 
+  context.beginPath();
   context.moveTo(A.x,A.y);
   context.lineTo(B.x,B.y);
   context.lineTo(C.x,C.y);
   context.closePath();
+  context.stroke(); 
+  context.fill();
+
+  //circle template: 
+  context.beginPath();
+  context.arc(circumCenter.x,circumCenter.y,distance,0,2*Math.PI);
   context.stroke();
-  context.fill(); 
 
-  ab.slope = (B.y - A.y)/(B.x - A.x);
-  ab.intercept = B.y - B.x*ab.slope; 
-  ab.draw(context); 
+  circumCenter.draw(context); 
+  circumCenter.x = lAB.intersection(lBC).x; 
+  circumCenter.y = lAB.intersection(lBC).y; 
 
-  bc.slope = (C.y - B.y)/(C.x - B.x);
-  bc.intercept = B.y - B.x*bc.slope; 
-  bc.draw(context); 
-
-  ca.slope = (C.y - A.y)/(C.x - A.x);
-  ca.intercept = C.y - C.x*ca.slope; 
-  ca.draw(context); 
-
-  altitudebc.slope = -1/bc.slope; 
-  altitudebc.intercept = A.y - A.x*altitudebc.slope;
-  altitudebc.draw(context);
+ 
 
   A.draw(context);
   B.draw(context);
-  C.draw(context);
+  C.draw(context); 
+
+  mAB.draw(context);
+  mAB.x = (A.x + B.x)/2; 
+  mAB.y = (A.y + B.y)/2; 
+
+  mBC.draw(context);
+  mBC.x = (B.x + C.x)/2; 
+  mBC.y = (B.y + C.y)/2;
+
+  mCA.draw(context);
+  mCA.x = (C.x + A.x)/2; 
+  mCA.y = (C.y + A.y)/2;
+
+  lAB.draw(context);
+  lAB.slope = -1/ab.slope;
+  lAB.intercept = mAB.y - mAB.x*lAB.slope;
+
+  lBC.draw(context);
+  lBC.slope = -1/bc.slope;
+  lBC.intercept = mBC.y - mBC.x*lBC.slope;
+
+  lCA.draw(context);
+  lCA.slope = -1/ca.slope;
+  lCA.intercept = mCA.y - mCA.x*lCA.slope;
+
+  ab.draw(context);
+  ab.slope = (B.y - A.y) / (B.x - A.x);
+  ab.intercept = (B.y - B.x*ab.slope);
+
+  bc.draw(context);
+  bc.slope = (B.y - C.y) / (B.x - C.x);
+  bc.intercept = (B.y - B.x*bc.slope);
+
+  ca.draw(context);
+  ca.slope = (C.y - A.y) / (C.x - A.x);
+  ca.intercept = (C.y - C.x*ca.slope);
 }
 
-setInterval(animate,10)
+setInterval(animate,10); 
